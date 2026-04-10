@@ -1,0 +1,6 @@
+# Core (preprocessing / future ML)
+numpy>=1.24
+opencv-python-headless>=4.8
+torch
+torchvision
+gradio
