@@ -18,7 +18,6 @@ This project is a **POC**, not a production fraud-decisioning system.
 - `inference.py`: loads a checkpoint and compares two signature images
 - `demo_app.py`: Gradio UI for local demo use
 - `case_study.md`: short presentation-friendly summary of the project and results
-- `TECHNICAL_ASSESSMENT.md`: longer technical write-up and framing document
 
 ## Requirements
 
