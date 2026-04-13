@@ -164,6 +164,7 @@ def build_demo() -> gr.Blocks:
             examples=[
                 ["data/samples/genuine/genuine_1.png", "data/samples/genuine/genuine_2.png"],
                 ["data/samples/genuine/genuine_1.png", "data/samples/other/other_1.png"],
+                ["data/samples/genuine/genuine_1.png", "data/samples/other/other_3.png"],
             ],
             inputs=[reference_input, questioned_input],
         )

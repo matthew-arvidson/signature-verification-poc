@@ -130,16 +130,18 @@ def _largest_signature_bbox(
 ) -> Optional[Tuple[int, int, int, int]]:
     """
     Find a bounding box around signature-like ink in the lower part of the check.
-    binary_inv should be THRESH_BINARY_INV style (ink white).
+
+    `binary_inv` should have white ink on a black background. Rather than picking
+    one contour, merge all meaningful stroke contours so disconnected letters are
+    boxed as a single signature region.
     """
     h, w = gray_shape
     contours, _ = cv2.findContours(
         binary_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
     )
     y_min = int(h * config.signature_search_top)
-    best: Optional[Tuple[int, int, int, int]] = None
-    best_area = 0
     min_area = w * h * config.min_contour_area_frac
+    candidate_boxes: list[Tuple[int, int, int, int]] = []
 
     for c in contours:
         x, y, cw, ch = cv2.boundingRect(c)
@@ -148,14 +150,16 @@ def _largest_signature_bbox(
         area = cw * ch
         if area < min_area:
             continue
-        ar = cw / max(ch, 1)
-        if ar > config.max_aspect_ratio or ar < 1.0 / config.max_aspect_ratio:
-            continue
-        if area > best_area:
-            best_area = area
-            best = (x, y, cw, ch)
+        candidate_boxes.append((x, y, cw, ch))
 
-    return best
+    if not candidate_boxes:
+        return None
+
+    x0 = min(x for x, _, _, _ in candidate_boxes)
+    y0 = min(y for _, y, _, _ in candidate_boxes)
+    x1 = max(x + cw for x, _, cw, _ in candidate_boxes)
+    y1 = max(y + ch for _, y, _, ch in candidate_boxes)
+    return (x0, y0, x1 - x0, y1 - y0)
 
 
 def detect_signature_bbox(
